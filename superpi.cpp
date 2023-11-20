@@ -2,6 +2,7 @@
 #include <gmp.h>
 #include <cmath>
 #include <pthread.h>
+#include <chrono>
 
 // Function prototypes
 void* computePI(void* precision);
@@ -16,11 +17,21 @@ int main(int argc, char *argv[]) {
     int precision = std::atoi(argv[1]);
     pthread_t thread_id;
 
+    // Start timer
+    auto start = std::chrono::high_resolution_clock::now();
+
     // Start a thread to compute PI
     pthread_create(&thread_id, NULL, computePI, &precision);
 
     // Wait for the computation to finish
     pthread_join(thread_id, NULL);
+
+    // End timer
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+
+    std::cout << "\nBenchmark Score: " << elapsed.count() << " seconds\n";
+
 
     return 0;
 }
