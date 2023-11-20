@@ -5,6 +5,7 @@
 
 // Function prototypes
 void* computePI(void* precision);
+void printProgressBar(int iteration, int total);
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
@@ -39,6 +40,8 @@ void* computePI(void* precisionPtr) {
     mpf_set_ui(p, 1); // p = 1
 
     for (int i = 0; i < precision; ++i) {
+        // Progress Bar Update
+        printProgressBar(i, precision);
         // Compute a_next = (a + b) / 2
         mpf_add(a_next, a, b);
         mpf_div_ui(a_next, a_next, 2);
@@ -71,4 +74,19 @@ void* computePI(void* precisionPtr) {
     // Clean up
     mpf_clears(a, b, t, p, a_next, pi, NULL);
     pthread_exit(NULL);
+}
+
+void printProgressBar(int iteration, int total) {
+    const int barWidth = 70;
+    float progress = (float)iteration / total;
+
+    std::cout << "[";
+    int pos = barWidth * progress;
+    for (int i = 0; i < barWidth; ++i) {
+        if (i < pos) std::cout << "=";
+        else if (i == pos) std::cout << ">";
+        else std::cout << " ";
+    }
+    std::cout << "] " << int(progress * 100.0) << " %\r";
+    std::cout.flush();
 }
